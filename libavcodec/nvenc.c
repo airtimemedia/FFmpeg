@@ -30,6 +30,7 @@
 #include "libavutil/mem.h"
 #include "libavutil/pixdesc.h"
 #include "internal.h"
+#include "../libavutil/frame.h"
 
 #define NVENC_CAP 0x30
 #define IS_CBR(rc) (rc == NV_ENC_PARAMS_RC_CBR ||             \
@@ -320,6 +321,13 @@ static int nvenc_check_capabilities(AVCodecContext *avctx)
     ret = nvenc_check_cap(avctx, NV_ENC_CAPS_SUPPORT_CABAC);
     if (ctx->coder == NV_ENC_H264_ENTROPY_CODING_MODE_CABAC && ret <= 0) {
         av_log(avctx, AV_LOG_VERBOSE, "CABAC entropy coding not supported\n");
+        return AVERROR(ENOSYS);
+    }
+
+    ret = nvenc_check_cap(avctx, NV_ENC_CAPS_SUPPORT_DYN_RES_CHANGE);
+    av_log(avctx, AV_LOG_VERBOSE, "check cap return: %d\n", ret);
+    if (ret != 1) {
+        av_log(avctx, AV_LOG_VERBOSE, "Dynamic resolution change not supported\n");
         return AVERROR(ENOSYS);
     }
 
@@ -1039,8 +1047,17 @@ static av_cold int nvenc_setup_encoder(AVCodecContext *avctx)
     ctx->encode_config.version = NV_ENC_CONFIG_VER;
     ctx->init_encode_params.version = NV_ENC_INITIALIZE_PARAMS_VER;
 
+    // check if height/width changed and reconfigure if so
     ctx->init_encode_params.encodeHeight = avctx->height;
     ctx->init_encode_params.encodeWidth = avctx->width;
+
+    // use initial as max
+    ctx->init_encode_params.maxEncodeHeight = avctx->width;
+    ctx->init_encode_params.maxEncodeWidth = avctx->width;
+    av_log(avctx, AV_LOG_VERBOSE, "maxEncodeHeight: %d, maxEncodeWidth: %d\n", ctx->init_encode_params.maxEncodeHeight,
+           ctx->init_encode_params.maxEncodeWidth);
+    ctx->last_frame_height = avctx->height;
+    ctx->last_frame_width = avctx->width;
 
     ctx->init_encode_params.encodeConfig = &ctx->encode_config;
 
@@ -1072,6 +1089,8 @@ static av_cold int nvenc_setup_encoder(AVCodecContext *avctx)
 
     ctx->init_encode_params.frameRateNum = avctx->time_base.den;
     ctx->init_encode_params.frameRateDen = avctx->time_base.num * avctx->ticks_per_frame;
+    // TODO(tom): also check frame rate when changing resolution dynamically
+    av_log(avctx, AV_LOG_VERBOSE, "ticks_per_frame: %d\n", avctx->ticks_per_frame);
 
     ctx->init_encode_params.enableEncodeAsync = 0;
     ctx->init_encode_params.enablePTD = 1;
@@ -1822,6 +1841,10 @@ int ff_nvenc_send_frame(AVCodecContext *avctx, const AVFrame *frame)
     NV_ENC_PIC_PARAMS pic_params = { 0 };
     pic_params.version = NV_ENC_PIC_PARAMS_VER;
 
+    int needs_reconfigure = 0;
+    NV_ENC_RECONFIGURE_PARAMS reconfigure_params = { 0 };
+    reconfigure_params.version = NV_ENC_RECONFIGURE_PARAMS_VER;
+
     if (!ctx->cu_context || !ctx->nvencoder)
         return AVERROR(EINVAL);
 
@@ -1881,10 +1904,32 @@ int ff_nvenc_send_frame(AVCodecContext *avctx, const AVFrame *frame)
         ctx->encoder_flushing = 1;
     }
 
+    if (ctx->last_frame_width != frame->width || ctx->last_frame_height != frame->height) {
+        needs_reconfigure = 1;
+        ctx->last_frame_width = frame->width;
+        ctx->last_frame_height = frame->height;
+
+        reconfigure_params.resetEncoder = 0;
+        reconfigure_params.forceIDR = 1;
+        reconfigure_params.reInitEncodeParams = ctx->init_encode_params;
+        reconfigure_params.reInitEncodeParams.encodeHeight = frame->height;
+        reconfigure_params.reInitEncodeParams.encodeWidth = frame->width;
+    }
+
     cu_res = dl_fn->cuda_dl->cuCtxPushCurrent(ctx->cu_context);
     if (cu_res != CUDA_SUCCESS) {
         av_log(avctx, AV_LOG_ERROR, "cuCtxPushCurrent failed\n");
         return AVERROR_EXTERNAL;
+    }
+
+    // check if frame width/height for context matches; if not, reconfigure codec
+    // with nvEncReconfigureEncoder
+    if (needs_reconfigure) {
+        av_log(avctx, AV_LOG_VERBOSE, "XXX: Reconfiguring encoder\n");
+        nv_status = p_nvenc->nvEncReconfigureEncoder(ctx->nvencoder, &reconfigure_params);
+        if (nv_status != NV_ENC_SUCCESS) {
+            av_log(avctx, AV_LOG_ERROR, "nvEncReconfigure Encoder failed\n");
+        }
     }
 
     nv_status = p_nvenc->nvEncEncodePicture(ctx->nvencoder, &pic_params);

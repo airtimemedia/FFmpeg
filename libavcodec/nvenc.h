@@ -165,6 +165,10 @@ typedef struct NvencContext
     int cqp;
     int weighted_pred;
     int coder;
+
+    int last_frame_width;
+    int last_frame_height;
+    AVRational last_fps;
 } NvencContext;
 
 int ff_nvenc_encode_init(AVCodecContext *avctx);
