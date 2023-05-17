@@ -103,13 +103,13 @@ foreach(ARCH ${ARCHS})
   file(MAKE_DIRECTORY "${ffmpeg_binary_dir}")
 
   # run_config depends on libx264 because configure checks existence of libx264.a using pkg-config
-  set(libx264_dir "${PROJECT_SOURCE_DIR}/../x264")
+  set(libx264_dir "${at_deps_dir}/third_party/x264")
   set(libx264_src_dir "${libx264_dir}/src")
   set(libx264_bin_arch_dir "${PROJECT_BINARY_DIR}/../x264/build")
   set(libx264_bin_dir "${libx264_bin_arch_dir}/${ARCH}")
 
   # run_config depends on librtmp because configure checks existence of librtmp.a using pkg-config
-  set(librtmp_dir "${PROJECT_SOURCE_DIR}/../rtmpdump")
+  set(librtmp_dir "${at_deps_dir}/third_party/rtmpdump")
   set(librtmp_src_dir "${librtmp_dir}/rtmpdump/librtmp")
   set(librtmp_bin_arch_dir "${PROJECT_BINARY_DIR}/../rtmpdump/build")
   set(librtmp_bin_dir "${librtmp_bin_arch_dir}/${ARCH}/lib")
