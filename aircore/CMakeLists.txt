@@ -120,15 +120,17 @@ foreach(ARCH ${ARCHS})
   set(libcrypto_bin_arch_dir "${PROJECT_BINARY_DIR}/../boringssl/build")
 
   # run_config depends on freetype because configure checks existence of libfreetype.a using pkg-config
-  set(libfreetype_dir "${PROJECT_SOURCE_DIR}/../freetype")
+  set(libfreetype_dir "${at_deps_dir}/third_party/freetype")
   set(libfreetype_inc_dir "${libfreetype_dir}/include")
   set(libfreetype_lib_arch_dir "${PROJECT_BINARY_DIR}/../freetype")
+
+get_filename_component(PARENT_DIR "${PROJECT_SOURCE_DIR}" DIRECTORY)
 
   # configure
   add_custom_command(
     OUTPUT ${ffmpeg_makefile}
     COMMAND "${PROJECT_SOURCE_DIR}/run_config.sh"
-    ARGS "${PROJECT_SOURCE_DIR}/src" "${AT_CMAKE_C_COMPILER} ${AT_CMAKE_C_COMPILER_ARG1}" "${CMAKE_C_FLAGS_RELEASE}"
+    ARGS "${PARENT_DIR}" "${AT_CMAKE_C_COMPILER} ${AT_CMAKE_C_COMPILER_ARG1}" "${CMAKE_C_FLAGS_RELEASE}"
          "${at_target_os}" "${ARCH}" "${at_ccache}" "${CMAKE_AR}" "${CMAKE_RANLIB}"
          "${libx264_src_dir}" "${libx264_bin_dir}"
          "${libfreetype_inc_dir}" "${libfreetype_lib_arch_dir}"
