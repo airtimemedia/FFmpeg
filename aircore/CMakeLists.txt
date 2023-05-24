@@ -32,7 +32,7 @@ endfunction()
 set(ffmpeg_configure_flags "")
 set(ffmpeg_link_libs "")
 
-is_empty_dir("${at_deps_dir}/third_party/cuda/src" cuda_empty)
+is_empty_dir("${at_media_deps_dir}/cuda" cuda_empty)
 if (NOT cuda_empty)
   message("ffmpeg: enabling CUDA")
   set(ffmpeg_configure_flags
@@ -70,7 +70,7 @@ if (NOT rtmpdump_empty)
   )
 endif()
 
-is_empty_dir("${at_deps_dir}/third_party/freetype" freetype_empty)
+is_empty_dir("${at_media_deps_dir}/freetype" freetype_empty)
 if (NOT freetype_empty)
   message("ffmpeg: enabling freetype")
   set(ffmpeg_configure_flags
@@ -120,7 +120,7 @@ foreach(ARCH ${ARCHS})
   set(libcrypto_bin_arch_dir "${PROJECT_BINARY_DIR}/../boringssl/build")
 
   # run_config depends on freetype because configure checks existence of libfreetype.a using pkg-config
-  set(libfreetype_dir "${at_deps_dir}/third_party/freetype")
+  set(libfreetype_dir "${at_media_deps_dir}/freetype")
   set(libfreetype_inc_dir "${libfreetype_dir}/include")
   set(libfreetype_lib_arch_dir "${PROJECT_BINARY_DIR}/../freetype")
 
