@@ -58,13 +58,13 @@ if [ "$OS" = "android" ] ; then
   CONFIG_OPTS="${CONFIG_OPTS} --host=armv7"
   export AR
   export RANLIB
-  export CPP="${CC} -E"
+  export CPP="${CC} -E -D__STDC_CONSTANT_MACROS"
   export CPPFLAGS=${CFLAGS}
-elif [ "x$OS" = "xosx" ] ; then
-  OS=darwin12
-  CONFIG_OPTS="$CONFIG_OPTS --arch=x86_64 --x86asmexe=${YASM}"
-  CFLAGS="${CFLAGS} -arch x86_64"
-  LDFLAGS="${LDFLAGS} -arch x86_64"
+#elif [ "x$OS" = "xosx" ] ; then
+  #OS=darwin12
+  #CONFIG_OPTS="$CONFIG_OPTS --arch=x86_64 --x86asmexe=${YASM}"
+  #CFLAGS="${CFLAGS} -arch x86_64"
+  #LDFLAGS="${LDFLAGS} -arch x86_64"
 elif [ "x$OS" = "xios" ] ; then
   OS=darwin
   if [ "x$ARCH" = "xi386" -o "x$ARCH" = "xx86_64" ] ; then
