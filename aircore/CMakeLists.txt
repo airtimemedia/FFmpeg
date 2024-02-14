@@ -81,6 +81,19 @@ if (NOT freetype_empty)
   # appended to ffmpeg_link_libs here like the other libs
 endif()
 
+is_empty_dir("${at_media_deps_dir}/harfbuzz" harfbuzz_empty)
+if (NOT harfbuzz_empty)
+  message("ffmpeg: enabling harfbuzz")
+  set(ffmpeg_configure_flags
+    "${ffmpeg_configure_flags} \
+    --enable-libharfbuzz"
+  )
+
+  list(APPEND ffmpeg_link_libs
+    harfbuzz
+  )
+endif()
+
 set(ffmpeg_lib_files "")
 set(ffmpeg_binary_base_dir "${PROJECT_BINARY_DIR}/build")
 
@@ -122,6 +135,11 @@ foreach(ARCH ${ARCHS})
   set(libfreetype_inc_dir "${libfreetype_dir}/include")
   set(libfreetype_lib_arch_dir "${PROJECT_BINARY_DIR}/../freetype")
 
+  # run_config depends on freetype because configure checks existence of libfreetype.a using pkg-config
+  set(libharfbuzz_dir "${at_media_deps_dir}/harfbuzz")
+  set(libharfbuzz_inc_dir "${libharfbuzz_dir}/src")
+  set(libharfbuzz_lib_arch_dir "${PROJECT_BINARY_DIR}/../harfbuzz")
+
   get_filename_component(PARENT_DIR "${PROJECT_SOURCE_DIR}" DIRECTORY)
 
   # configure
@@ -132,6 +150,7 @@ foreach(ARCH ${ARCHS})
          "${at_target_os}" "${ARCH}" "${at_ccache}" "${CMAKE_AR}" "${CMAKE_RANLIB}"
          "${libx264_src_dir}" "${libx264_bin_dir}"
          "${libfreetype_inc_dir}" "${libfreetype_lib_arch_dir}"
+         "${libharfbuzz_inc_dir}" "${libharfbuzz_lib_arch_dir}"
          "${librtmp_src_dir}" "${librtmp_bin_dir}"
          $<TARGET_FILE_DIR:crypto> $<TARGET_FILE_DIR:ssl> $<TARGET_FILE_DIR:decrepit> 
          "${cuda_include_dir}" "${cuda_lib_dir}"
@@ -145,7 +164,7 @@ foreach(ARCH ${ARCHS})
   )
 
   add_custom_target(ffmpeg_configure_${ARCH}
-    DEPENDS ${ffmpeg_makefile} ${ffmpeg_link_libs}
+    DEPENDS ${ffmpeg_makefile} ${ffmpeg_link_libs} ${FREETYPE_LIB}
   )
   set(last_configure_target ffmpeg_configure_${ARCH})
 
