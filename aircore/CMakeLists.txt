@@ -121,9 +121,8 @@ foreach(ARCH ${ARCHS})
   set(libx264_bin_dir "${libx264_bin_arch_dir}/${ARCH}")
 
   # run_config depends on librtmp because configure checks existence of librtmp.a using pkg-config
-  set(librtmp_src_dir "${at_media_deps_dir}/rtmpdump/librtmp")
-  set(librtmp_bin_arch_dir "${PROJECT_BINARY_DIR}/../rtmpdump/build")
-  set(librtmp_bin_dir "${librtmp_bin_arch_dir}/${ARCH}/lib")
+  set(librtmp_src_dir "${at_media_deps_dir}/rtmpdump/")
+  set(librtmp_bin_dir "${PROJECT_BINARY_DIR}/../rtmpdump")
 
   set(crypto_target $<TARGET_FILE:crypto>)
 
