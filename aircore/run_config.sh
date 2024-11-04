@@ -27,6 +27,7 @@ INSTALL_DIR="${22}"
 CONFIGURE_FLAGS="${23}"
 LDFLAGS="${24}"
 YASM="${25}"
+GENERATOR_SUFFIX="${26}"
 
 CONFIG_OPTS="\
 --disable-iconv \
@@ -57,6 +58,13 @@ echo "LIBRTMP_LIB_DIR: ${LIBRTMP_LIB_DIR}"
 echo "LIBCRYPTO_LIB_DIR: ${LIBCRYPTO_LIB_DIR}"
 echo "LIBSSL_LIB_DIR: ${LIBSSL_LIB_DIR}"
 echo "LIBDECREPIT_LIB_DIR: ${LIBDECREPIT_LIB_DIR}"
+echo "CUDA_INC_DIR: ${CUDA_INC_DIR}"
+echo "CUDA_LIB_DIR: ${CUDA_LIB_DIR}"
+echo "INSTALL_DIR: ${INSTALL_DIR}"
+echo "CONFIGURE_FLAGS: ${CONFIGURE_FLAGS}"
+echo "LDFLAGS: ${LDFLAGS}"
+echo "YASM: ${YASM}"
+echo "GENERATOR_SUFFIX: ${GENERATOR_SUFFIX}"
 
 if [ "$OS" = "android" ] ; then
   CONFIG_OPTS="${CONFIG_OPTS} --host=armv7"
@@ -97,7 +105,7 @@ export CFLAGS
 export LDFLAGS
 
 # Configure checks existence of libx264 and librtmp using pkg-config
-PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:${LIBX264_LIB_DIR}:${LIBRTMP_LIB_DIR}"
+PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:${LIBX264_LIB_DIR}:${LIBRTMP_LIB_DIR}/${GENERATOR_SUFFIX}"
 # as well as libfreetype
 PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:${LIBFREETYPE_LIB_DIR}"
 # as well as libharfbuzz
