@@ -96,7 +96,7 @@ elif [ "x$OS" = "xlinux" ] ; then
   CC_SH="${LIBX264_LIB_DIR}/ccache_cc.sh"
   echo ${CC} \$* > ${CC_SH}
   chmod 755 ${CC_SH}
-  CONFIG_OPTS="${CONFIG_OPTS} --disable-cross_compile --cc=${CC_SH} --enable-pic --extra-ldflags=-lpng"
+  CONFIG_OPTS="${CONFIG_OPTS} --disable-cross_compile --cc=${CC_SH} --enable-pic"
 fi
 
 CFLAGS="${CFLAGS} -I${LIBX264_INC_DIR} -I${LIBX264_LIB_DIR} -I${LIBRTMP_INC_DIR}"  # LIBX264_LIB_DIR for x264_config.h
