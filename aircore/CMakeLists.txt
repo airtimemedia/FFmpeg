@@ -59,7 +59,6 @@ if (NOT libx264_empty)
 endif()
 
 is_empty_dir("${at_deps_dir}/third_party/rtmpdump/rtmpdump" rtmpdump_empty)
-
 if (NOT rtmpdump_empty)
   message("ffmpeg: enabling rtmpdump")
   set(ffmpeg_configure_flags

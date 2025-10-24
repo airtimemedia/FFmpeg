@@ -106,7 +106,6 @@ export LDFLAGS
 
 # Configure checks existence of libx264 and librtmp using pkg-config
 PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:${LIBX264_LIB_DIR}:${LIBRTMP_LIB_DIR}/${GENERATOR_SUFFIX}"
-
 # as well as libfreetype
 PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:${LIBFREETYPE_LIB_DIR}"
 # as well as libharfbuzz
