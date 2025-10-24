@@ -58,7 +58,7 @@ if (NOT libx264_empty)
   )
 endif()
 
-is_empty_dir("${at_media_deps_dir}/rtmpdump" rtmpdump_empty)
+is_empty_dir("${at_deps_dir}/third_party/rtmpdump/rtmpdump" rtmpdump_empty)
 if (NOT rtmpdump_empty)
   message("ffmpeg: enabling rtmpdump")
   set(ffmpeg_configure_flags
@@ -151,13 +151,12 @@ foreach(ARCH ${ARCHS})
          "${libfreetype_inc_dir}" "${libfreetype_lib_arch_dir}"
          "${libharfbuzz_inc_dir}" "${libharfbuzz_lib_arch_dir}"
          "${librtmp_src_dir}" "${librtmp_bin_dir}"
-         $<TARGET_FILE_DIR:crypto> $<TARGET_FILE_DIR:ssl> $<TARGET_FILE_DIR:decrepit> 
+         $<TARGET_FILE_DIR:crypto> $<TARGET_FILE_DIR:ssl> $<TARGET_FILE_DIR:decrepit>
          "${cuda_include_dir}" "${cuda_lib_dir}"
          "${ffmpeg_install_dir}"
          "${ffmpeg_configure_flags}"
          "${CMAKE_SHARED_LINKER_FLAGS}"
          "${YASM}"
-         "$<$<STREQUAL: ${CMAKE_GENERATOR}, Xcode>:$<IF:$<CONFIG:Release>,Release/,Debug/>>"
     WORKING_DIRECTORY ${ffmpeg_binary_dir}
     DEPENDS ${PROJECT_SOURCE_DIR}/run_config.sh ${last_configure_target}
     VERBATIM
