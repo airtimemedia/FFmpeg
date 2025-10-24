@@ -157,6 +157,7 @@ foreach(ARCH ${ARCHS})
          "${ffmpeg_configure_flags}"
          "${CMAKE_SHARED_LINKER_FLAGS}"
          "${YASM}"
+         "$<$<STREQUAL: ${CMAKE_GENERATOR}, Xcode>:$<IF:$<CONFIG:Release>,Release/,Debug/>>"
     WORKING_DIRECTORY ${ffmpeg_binary_dir}
     DEPENDS ${PROJECT_SOURCE_DIR}/run_config.sh ${last_configure_target}
     VERBATIM
