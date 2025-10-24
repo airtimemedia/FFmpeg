@@ -105,15 +105,13 @@ export CFLAGS
 export LDFLAGS
 
 # Configure checks existence of libx264 and librtmp using pkg-config
-
-PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:${LIBX264_LIB_DIR}:${LIBRTMP_LIB_DIR}/${GENERATOR_SUFFIX}"
-
 # Only append GENERATOR_SUFFIX if it's non-empty (for Xcode Debug/Release subdirs)
-# if [ -n "${GENERATOR_SUFFIX}" ]; then
-#   PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:${LIBX264_LIB_DIR}:${LIBRTMP_LIB_DIR}/${GENERATOR_SUFFIX}"
-# else
-#   PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:${LIBX264_LIB_DIR}:${LIBRTMP_LIB_DIR}"
-# fi
+if [ -n "${GENERATOR_SUFFIX}" ]; then
+  PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:${LIBX264_LIB_DIR}:${LIBRTMP_LIB_DIR}/${GENERATOR_SUFFIX}"
+else
+  PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:${LIBX264_LIB_DIR}:${LIBRTMP_LIB_DIR}"
+fi
+
 # as well as libfreetype
 PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:${LIBFREETYPE_LIB_DIR}"
 # as well as libharfbuzz
