@@ -58,7 +58,12 @@ if (NOT libx264_empty)
   )
 endif()
 
-is_empty_dir("${at_media_deps_dir}/rtmpdump" rtmpdump_empty)
+if (APPLE)
+    is_empty_dir("${at_media_deps_dir}/rtmpdump" rtmpdump_empty)
+else()
+    is_empty_dir("${at_deps_dir}/third_party/rtmpdump/rtmpdump" rtmpdump_empty)
+endif()
+
 if (NOT rtmpdump_empty)
   message("ffmpeg: enabling rtmpdump")
   set(ffmpeg_configure_flags
