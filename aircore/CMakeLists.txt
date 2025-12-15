@@ -58,18 +58,6 @@ if (NOT libx264_empty)
   )
 endif()
 
-is_empty_dir("${at_media_deps_dir}/rtmpdump" rtmpdump_empty)
-if (NOT rtmpdump_empty)
-  message("ffmpeg: enabling rtmpdump")
-  set(ffmpeg_configure_flags
-    "${ffmpeg_configure_flags} \
-    --enable-librtmp"
-  )
-  list(APPEND ffmpeg_link_libs
-    librtmp
-  )
-endif()
-
 is_empty_dir("${at_media_deps_dir}/freetype" freetype_empty)
 if (NOT freetype_empty)
   message("ffmpeg: enabling freetype")
@@ -151,7 +139,7 @@ foreach(ARCH ${ARCHS})
          "${libfreetype_inc_dir}" "${libfreetype_lib_arch_dir}"
          "${libharfbuzz_inc_dir}" "${libharfbuzz_lib_arch_dir}"
          "${librtmp_src_dir}" "${librtmp_bin_dir}"
-         $<TARGET_FILE_DIR:crypto> $<TARGET_FILE_DIR:ssl> $<TARGET_FILE_DIR:decrepit> 
+         $<TARGET_FILE_DIR:crypto> $<TARGET_FILE_DIR:ssl> $<TARGET_FILE_DIR:decrepit>
          "${cuda_include_dir}" "${cuda_lib_dir}"
          "${ffmpeg_install_dir}"
          "${ffmpeg_configure_flags}"
