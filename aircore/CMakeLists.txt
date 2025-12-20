@@ -108,10 +108,6 @@ foreach(ARCH ${ARCHS})
   set(libx264_bin_arch_dir "${PROJECT_BINARY_DIR}/../x264/build")
   set(libx264_bin_dir "${libx264_bin_arch_dir}/${ARCH}")
 
-  # run_config depends on librtmp because configure checks existence of librtmp.a using pkg-config
-  set(librtmp_src_dir "${at_media_deps_dir}/rtmpdump/")
-  set(librtmp_bin_dir "${PROJECT_BINARY_DIR}/../rtmpdump")
-
   set(crypto_target $<TARGET_FILE:crypto>)
 
   # run_config depends on libcrypto and libssl because librtmp depends on them
@@ -133,12 +129,12 @@ foreach(ARCH ${ARCHS})
   add_custom_command(
     OUTPUT ${ffmpeg_makefile}
     COMMAND "${PROJECT_SOURCE_DIR}/run_config.sh"
+    # 24 params which run_config expects in this order
     ARGS "${PARENT_DIR}" "${AT_CMAKE_C_COMPILER} ${AT_CMAKE_C_COMPILER_ARG1}" "${CMAKE_C_FLAGS_RELEASE}"
          "${at_target_os}" "${ARCH}" "${at_ccache}" "${CMAKE_AR}" "${CMAKE_RANLIB}"
          "${libx264_src_dir}" "${libx264_bin_dir}"
          "${libfreetype_inc_dir}" "${libfreetype_lib_arch_dir}"
          "${libharfbuzz_inc_dir}" "${libharfbuzz_lib_arch_dir}"
-         "${librtmp_src_dir}" "${librtmp_bin_dir}"
          $<TARGET_FILE_DIR:crypto> $<TARGET_FILE_DIR:ssl> $<TARGET_FILE_DIR:decrepit>
          "${cuda_include_dir}" "${cuda_lib_dir}"
          "${ffmpeg_install_dir}"
