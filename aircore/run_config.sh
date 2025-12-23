@@ -16,18 +16,14 @@ LIBFREETYPE_INC_DIR="${11}"
 LIBFREETYPE_LIB_DIR="${12}"
 LIBHARFBUZZ_INC_DIR="${13}"
 LIBHARFBUZZ_LIB_DIR="${14}"
-LIBRTMP_INC_DIR="${15}"
-LIBRTMP_LIB_DIR="${16}"
-LIBCRYPTO_LIB_DIR="${17}"
-LIBSSL_LIB_DIR="${18}"
-LIBDECREPIT_LIB_DIR="${19}"
-CUDA_INC_DIR="${20}"
-CUDA_LIB_DIR="${21}"
-INSTALL_DIR="${22}"
-CONFIGURE_FLAGS="${23}"
-LDFLAGS="${24}"
-YASM="${25}"
-GENERATOR_SUFFIX="${26}"
+LIBDECREPIT_LIB_DIR="${15}"
+CUDA_INC_DIR="${16}"
+CUDA_LIB_DIR="${17}"
+INSTALL_DIR="${18}"
+CONFIGURE_FLAGS="${19}"
+LDFLAGS="${20}"
+YASM="${21}"
+GENERATOR_SUFFIX="${22}"
 
 CONFIG_OPTS="\
 --disable-iconv \
@@ -40,7 +36,7 @@ CONFIG_OPTS="\
 CONFIG_OPTS="${CONFIG_OPTS} ${CONFIGURE_FLAGS}"
 CONFIG_OPTS="${CONFIG_OPTS} --disable-filters --enable-filter=fps --enable-filter=scale --enable-filter=pad --enable-filter=hstack --enable-filter=vstack --enable-filter=drawtext --enable-filter=overlay --enable-filter=crop"
 #CONFIG_OPTS="${CONFIG_OPTS} --enable-hwaccel=nvenc --enable-nvenc"
-CONFIG_OPTS="${CONFIG_OPTS} --extra-ldflags=-L${LIBX264_LIB_DIR} --extra-ldflags=-L${LIBSSL_LIB_DIR} --extra-ldflags=-L${LIBCRYPTO_LIB_DIR} --extra-ldflags=-L${LIBDECREPIT_LIB_DIR}"
+CONFIG_OPTS="${CONFIG_OPTS} --extra-ldflags=-L${LIBX264_LIB_DIR} --extra-ldflags=-L${LIBDECREPIT_LIB_DIR}"
 CONFIG_OPTS="${CONFIG_OPTS} --prefix=${INSTALL_DIR}"
 
 echo "CC: ${CC}"
@@ -53,10 +49,6 @@ echo "LIBFREETYPE_INC_DIR: ${LIBFREETYPE_INC_DIR}"
 echo "LIBFREETYPE_LIB_DIR: ${LIBFREETYPE_LIB_DIR}"
 echo "LIBHARFBUZZ_INC_DIR: ${LIBHARFBUZZ_INC_DIR}"
 echo "LIBHARFBUZZ_LIB_DIR: ${LIBHARFBUZZ_LIB_DIR}"
-echo "LIBRTMP_INC_DIR: ${LIBRTMP_INC_DIR}"
-echo "LIBRTMP_LIB_DIR: ${LIBRTMP_LIB_DIR}"
-echo "LIBCRYPTO_LIB_DIR: ${LIBCRYPTO_LIB_DIR}"
-echo "LIBSSL_LIB_DIR: ${LIBSSL_LIB_DIR}"
 echo "LIBDECREPIT_LIB_DIR: ${LIBDECREPIT_LIB_DIR}"
 echo "CUDA_INC_DIR: ${CUDA_INC_DIR}"
 echo "CUDA_LIB_DIR: ${CUDA_LIB_DIR}"
@@ -96,16 +88,16 @@ elif [ "x$OS" = "xlinux" ] ; then
   CC_SH="${LIBX264_LIB_DIR}/ccache_cc.sh"
   echo ${CC} \$* > ${CC_SH}
   chmod 755 ${CC_SH}
-  CONFIG_OPTS="${CONFIG_OPTS} --disable-cross_compile --cc=${CC_SH} --enable-pic --extra-ldflags=-lpng"
+  CONFIG_OPTS="${CONFIG_OPTS} --disable-cross_compile --cc=${CC_SH} --enable-pic"
 fi
 
-CFLAGS="${CFLAGS} -I${LIBX264_INC_DIR} -I${LIBX264_LIB_DIR} -I${LIBRTMP_INC_DIR}"  # LIBX264_LIB_DIR for x264_config.h
+CFLAGS="${CFLAGS} -I${LIBX264_INC_DIR} -I${LIBX264_LIB_DIR}"  # LIBX264_LIB_DIR for x264_config.h
 CFLAGS="${CFLAGS} -I${LIBFREETYPE_INC_DIR} -I${LIBHARFBUZZ_INC_DIR}"
 export CFLAGS
 export LDFLAGS
 
-# Configure checks existence of libx264 and librtmp using pkg-config
-PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:${LIBX264_LIB_DIR}:${LIBRTMP_LIB_DIR}/${GENERATOR_SUFFIX}"
+# Configure checks existence of libx264 using pkg-config
+PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:${LIBX264_LIB_DIR}"
 # as well as libfreetype
 PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:${LIBFREETYPE_LIB_DIR}"
 # as well as libharfbuzz
