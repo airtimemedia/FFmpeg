@@ -132,7 +132,7 @@ foreach(ARCH ${ARCHS})
   # run_config depends on freetype because configure checks existence of libfreetype.a using pkg-config
   set(libfreetype_dir "${at_media_deps_dir}/freetype")
   set(libfreetype_inc_dir "${libfreetype_dir}/include")
-  set(libfreetype_lib_arch_dir "${PROJECT_BINARY_DIR}/../freetype")
+  set(libfreetype_lib_arch_dir "${PROJECT_BINARY_DIR}/../freetype/build/${ARCH}")
 
   # run_config depends on freetype because configure checks existence of libfreetype.a using pkg-config
   set(libharfbuzz_dir "${at_media_deps_dir}/harfbuzz")
@@ -140,6 +140,15 @@ foreach(ARCH ${ARCHS})
   set(libharfbuzz_lib_arch_dir "${PROJECT_BINARY_DIR}/../harfbuzz")
 
   get_filename_component(PARENT_DIR "${PROJECT_SOURCE_DIR}" DIRECTORY)
+
+  # Build list of file dependencies for configure
+  set(ffmpeg_configure_deps ${PROJECT_SOURCE_DIR}/run_config.sh)
+  if(NOT freetype_empty)
+    list(APPEND ffmpeg_configure_deps ${FREETYPE_LIB})
+  endif()
+  if(NOT harfbuzz_empty)
+    list(APPEND ffmpeg_configure_deps ${HARFBUZZ_LIB})
+  endif()
 
   # configure
   add_custom_command(
@@ -159,7 +168,7 @@ foreach(ARCH ${ARCHS})
          "${YASM}"
          "$<$<STREQUAL: ${CMAKE_GENERATOR}, Xcode>:$<IF:$<CONFIG:Release>,Release/,Debug/>>"
     WORKING_DIRECTORY ${ffmpeg_binary_dir}
-    DEPENDS ${PROJECT_SOURCE_DIR}/run_config.sh ${last_configure_target}
+    DEPENDS ${ffmpeg_configure_deps}
     VERBATIM
   )
 
