@@ -132,7 +132,7 @@ foreach(ARCH ${ARCHS})
   # run_config depends on freetype because configure checks existence of libfreetype.a using pkg-config
   set(libfreetype_dir "${at_media_deps_dir}/freetype")
   set(libfreetype_inc_dir "${libfreetype_dir}/include")
-  set(libfreetype_lib_arch_dir "${PROJECT_BINARY_DIR}/../freetype/build/${ARCH}")
+  set(libfreetype_lib_arch_dir "${PROJECT_BINARY_DIR}/../freetype/build")
 
   # run_config depends on freetype because configure checks existence of libfreetype.a using pkg-config
   set(libharfbuzz_dir "${at_media_deps_dir}/harfbuzz")
