@@ -88,6 +88,24 @@ set(ffmpeg_binary_base_dir "${PROJECT_BINARY_DIR}/build")
 # serialize the calls to configure by chaining dependencies since configuring
 # multiple archs in parallel seems to cause issues (at least with Xcode)
 set(last_configure_target "")
+set(FFMPEG_APPLE_ENV_CLEANUP_ARGS "")
+if (OSX)
+  set(FFMPEG_APPLE_ENV_CLEANUP_ARGS
+    --unset=DRIVERKIT_DEPLOYMENT_TARGET
+    --unset=IPHONEOS_DEPLOYMENT_TARGET
+    --unset=TVOS_DEPLOYMENT_TARGET
+    --unset=WATCHOS_DEPLOYMENT_TARGET
+    --unset=XROS_DEPLOYMENT_TARGET
+  )
+elseif (IOS)
+  set(FFMPEG_APPLE_ENV_CLEANUP_ARGS
+    --unset=DRIVERKIT_DEPLOYMENT_TARGET
+    --unset=MACOSX_DEPLOYMENT_TARGET
+    --unset=TVOS_DEPLOYMENT_TARGET
+    --unset=WATCHOS_DEPLOYMENT_TARGET
+    --unset=XROS_DEPLOYMENT_TARGET
+  )
+endif()
 
 foreach(ARCH ${ARCHS})
   set(ffmpeg_binary_dir "${ffmpeg_binary_base_dir}/${ARCH}")
@@ -151,8 +169,8 @@ foreach(ARCH ${ARCHS})
   file(GLOB_RECURSE ffmpeg_sources src *.c *.h *.s)
   add_custom_command(
     OUTPUT ${libavcodec_arch_file} ${libavformat_arch_file} ${libavutil_arch_file} ${libswscale_arch_file} ${libswresample_arch_file} ${libavfilter_arch_file}
-    COMMAND make V=1 # add V=1 for verbose output
-    COMMAND make install-headers
+    COMMAND ${CMAKE_COMMAND} -E env ${FFMPEG_APPLE_ENV_CLEANUP_ARGS} make V=1 # add V=1 for verbose output
+    COMMAND ${CMAKE_COMMAND} -E env ${FFMPEG_APPLE_ENV_CLEANUP_ARGS} make install-headers
     DEPENDS ffmpeg_configure_${ARCH} ${ffmpeg_sources}
     WORKING_DIRECTORY ${ffmpeg_binary_dir}
   )
