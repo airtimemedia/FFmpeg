@@ -25,6 +25,23 @@ LDFLAGS="${20}"
 YASM="${21}"
 GENERATOR_SUFFIX="${22}"
 
+# Xcode script phases export deployment targets for every Apple platform in the
+# project. ffmpeg configure invokes clang directly, so clear the unrelated
+# platform targets before probing the selected SDK.
+if [ "$OS" = osx ] ; then
+  unset DRIVERKIT_DEPLOYMENT_TARGET
+  unset IPHONEOS_DEPLOYMENT_TARGET
+  unset TVOS_DEPLOYMENT_TARGET
+  unset WATCHOS_DEPLOYMENT_TARGET
+  unset XROS_DEPLOYMENT_TARGET
+elif [ "$OS" = ios ] ; then
+  unset DRIVERKIT_DEPLOYMENT_TARGET
+  unset MACOSX_DEPLOYMENT_TARGET
+  unset TVOS_DEPLOYMENT_TARGET
+  unset WATCHOS_DEPLOYMENT_TARGET
+  unset XROS_DEPLOYMENT_TARGET
+fi
+
 CONFIG_OPTS="\
 --disable-iconv \
 --disable-bzlib \
