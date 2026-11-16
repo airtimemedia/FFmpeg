@@ -97,6 +97,13 @@ if (OSX)
     --unset=WATCHOS_DEPLOYMENT_TARGET
     --unset=XROS_DEPLOYMENT_TARGET
   )
+  # airtime: start (CAR-2678)
+  # Pass the selected minimum version to C, assembly, and configure probes.
+  if (CMAKE_OSX_DEPLOYMENT_TARGET)
+    list(APPEND FFMPEG_APPLE_ENV_CLEANUP_ARGS
+      "MACOSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}")
+  endif()
+  # airtime: end
 elseif (IOS)
   set(FFMPEG_APPLE_ENV_CLEANUP_ARGS
     --unset=DRIVERKIT_DEPLOYMENT_TARGET
@@ -141,7 +148,8 @@ foreach(ARCH ${ARCHS})
   # configure
   add_custom_command(
     OUTPUT ${ffmpeg_makefile}
-    COMMAND "${PROJECT_SOURCE_DIR}/run_config.sh"
+    # airtime (CAR-2678): configure and make must use the same Apple environment.
+    COMMAND ${CMAKE_COMMAND} -E env ${FFMPEG_APPLE_ENV_CLEANUP_ARGS} "${PROJECT_SOURCE_DIR}/run_config.sh"
     # 22 params which run_config expects in this order
     ARGS "${PARENT_DIR}" "${AT_CMAKE_C_COMPILER} ${AT_CMAKE_C_COMPILER_ARG1}" "${CMAKE_C_FLAGS_RELEASE}"
          "${at_target_os}" "${ARCH}" "${at_ccache}" "${CMAKE_AR}" "${CMAKE_RANLIB}"
